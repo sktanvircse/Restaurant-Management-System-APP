@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "restaurant-management",
+    "slug": "restaurant-management",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/restaurant.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.tanvirsk.restaurantmanagement"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "61b7f67e-a1d4-445c-8fd6-de3814d37465"
+      }
+    }
+  }
+}
