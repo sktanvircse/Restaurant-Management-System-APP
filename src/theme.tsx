@@ -1,5 +1,57 @@
 // theme.js
-export const RestaurantTheme = {
+interface ThemeColors {
+  primary: string;
+  secondary: string;
+  background: string;
+  cardBackground: string;
+  text: string;
+  inputBorder: string;
+  placeholder: string;
+  cardBorder: string;
+  buttonText: string;
+  hintText: string;
+  linkText: string;
+}
+
+interface ThemeSpacing {
+  small: number;
+  medium: number;
+  large: number;
+  xlarge: number;
+}
+
+interface ThemeTypography {
+  title: {
+    fontSize: number;
+    fontWeight: string;
+  };
+  label: {
+    fontSize: number;
+    fontWeight: string;
+  };
+  button: {
+    fontSize: number;
+    fontWeight: string;
+  };
+  hint: {
+    fontSize: number;
+  };
+}
+
+export interface RestaurantThemeType {
+  colors: ThemeColors;
+  spacing: ThemeSpacing;
+  borderRadius: {
+    small: number;
+    medium: number;
+    large: number;
+  };
+  typography: ThemeTypography;
+}
+
+
+
+export const RestaurantTheme: RestaurantThemeType = {
   colors: {
     primary: '#C41E3A',       // Deep red
     secondary: '#5E3023',     // Warm brown

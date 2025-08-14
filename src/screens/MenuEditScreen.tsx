@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { useDataStore } from "../store/data";
+import { RestaurantTheme } from "../theme";
 
 export default function MenuEditScreen({ route, navigation }: any) {
   const data = useDataStore();
@@ -60,29 +61,39 @@ export default function MenuEditScreen({ route, navigation }: any) {
         <TextInput
           value={name}
           onChangeText={setName}
-          style={styles.input}
           placeholder="e.g. Caesar Salad"
+          placeholderTextColor={RestaurantTheme.colors.placeholder}
+          style={[styles.input, { color: RestaurantTheme.colors.text }]}
         />
         <Text style={styles.label}>Price ($)</Text>
         <TextInput
           value={price}
           onChangeText={setPrice}
-          style={styles.input}
           keyboardType="decimal-pad"
           placeholder="9.99"
+          placeholderTextColor={RestaurantTheme.colors.placeholder}
+          style={[styles.input, { color: RestaurantTheme.colors.text }]}
         />
         <Text style={styles.label}>Category</Text>
         <TextInput
           value={category}
           onChangeText={setCategory}
-          style={styles.input}
           placeholder="Mains / Drinks ..."
+          placeholderTextColor={RestaurantTheme.colors.placeholder}
+          style={[styles.input, { color: RestaurantTheme.colors.text }]}
         />
         <TouchableOpacity
           onPress={() => setAvailable((v) => !v)}
-          style={styles.switch}
+          style={[
+            styles.switch,
+            {
+              backgroundColor: available
+                ? "#4CAF50"
+                : "#5E3023",
+            }
+          ]}
         >
-          <Text>{available ? "Available" : "Unavailable"}</Text>
+          <Text style={styles.switchText}>{available ? "Available" : "Unavailable"}</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={onSave} style={styles.button}>
           <Text style={styles.buttonText}>Save</Text>
@@ -94,26 +105,31 @@ export default function MenuEditScreen({ route, navigation }: any) {
 
 const styles = StyleSheet.create({
   form: { padding: 16, gap: 8 },
-  label: { fontWeight: "600" },
+  label: { fontWeight: "600", color: RestaurantTheme.colors.text },
   input: {
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: RestaurantTheme.colors.inputBorder,
     borderRadius: 8,
-    padding: 12,
-    backgroundColor: "#fff",
+    padding: 14,
+    color: RestaurantTheme.colors.text,
+    backgroundColor: RestaurantTheme.colors.background,
+    fontSize: 16,
   },
   switch: {
     alignSelf: "flex-start",
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 8,
-    backgroundColor: "#eee",
+  },
+  switchText: {
+    color: "#ffffffff",
+    fontWeight: 700,
   },
   button: {
-    backgroundColor: "#111",
+    backgroundColor: RestaurantTheme.colors.primary,
     padding: 14,
     borderRadius: 10,
     marginTop: 8,
   },
-  buttonText: { color: "#fff", textAlign: "center", fontWeight: "700" },
+  buttonText: { color: RestaurantTheme.colors.buttonText, textAlign: "center", fontWeight: "700", fontSize: 16, },
 });
