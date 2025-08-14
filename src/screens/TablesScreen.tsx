@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import TableRow from "../components/TableRow";
 import { useDataStore } from "../store/data";
+import { RestaurantTheme } from "../theme";
 
 export default function TablesScreen({ navigation }: any) {
   const data = useDataStore();
@@ -29,7 +30,8 @@ export default function TablesScreen({ navigation }: any) {
           placeholder="New table name"
           value={name}
           onChangeText={setName}
-          style={styles.input}
+          placeholderTextColor={RestaurantTheme.colors.placeholder}
+          style={[styles.input, { color: RestaurantTheme.colors.text }]}
         />
         <TouchableOpacity style={styles.add} onPress={onAdd}>
           <Text style={styles.addText}>Add</Text>
@@ -61,7 +63,7 @@ export default function TablesScreen({ navigation }: any) {
           />
         )}
         ListEmptyComponent={
-          <Text style={{ textAlign: "center", color: "#888", marginTop: 24 }}>
+          <Text style={{ textAlign: "center", color: RestaurantTheme.colors.hintText, marginTop: 24 }}>
             No tables
           </Text>
         }
@@ -75,16 +77,18 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: RestaurantTheme.colors.inputBorder,
     borderRadius: 8,
-    padding: 10,
-    backgroundColor: "#fff",
+    padding: 14,
+    color: RestaurantTheme.colors.text,
+    backgroundColor: RestaurantTheme.colors.background,
+    fontSize: 16,
   },
   add: {
-    backgroundColor: "#111",
+    backgroundColor: RestaurantTheme.colors.primary,
     paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingVertical: 14,
     borderRadius: 8,
   },
-  addText: { color: "#fff", fontWeight: "700" },
+  addText: { color: RestaurantTheme.colors.buttonText, fontWeight: "700" },
 });
