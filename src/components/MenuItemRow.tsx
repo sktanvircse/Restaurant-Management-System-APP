@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Switch, TouchableOpacity } from 'react-native';
 import { MenuItem } from '../store/data';
 import { formatCurrency } from '../utils/currency';
+import { RestaurantTheme } from '../theme';
 
 type Props = {
   item: MenuItem;
@@ -19,29 +20,46 @@ export default function MenuItemRow({ item, onEdit, onToggle, onDelete }: Props)
           {item.category || 'Uncategorized'} • {formatCurrency(item.price)}
         </Text>
       </View>
-      <Switch value={item.available} onValueChange={onToggle} />
+      <Switch value={item.available} onValueChange={onToggle} trackColor={{
+        false: RestaurantTheme.colors.cardBorder,
+        true: RestaurantTheme.colors.primary
+      }}
+        thumbColor={RestaurantTheme.colors.cardBackground} />
       <TouchableOpacity onPress={onEdit} style={styles.action}>
         <Text style={styles.link}>Edit</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={onDelete} style={styles.action}>
-        <Text style={[styles.link, { color: '#c00' }]}>Delete</Text>
+        <Text style={[styles.link, { color: RestaurantTheme.colors.primary }]}>Delete</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  row: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+row: {
+    paddingHorizontal: RestaurantTheme.spacing.medium,
+    paddingVertical: RestaurantTheme.spacing.small,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#eee',
+    borderBottomColor: RestaurantTheme.colors.cardBorder,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: RestaurantTheme.spacing.small,
+    backgroundColor: RestaurantTheme.colors.cardBackground,
   },
-  name: { fontSize: 16, fontWeight: '600' },
-  meta: { color: '#666' },
-  action: { marginLeft: 8 },
-  link: { color: '#007AFF', fontWeight: '600' },
+  name: { 
+    fontSize: RestaurantTheme.typography.label.fontSize,
+    fontWeight: 700,
+    color: RestaurantTheme.colors.text,
+  },
+  meta: { 
+    color: RestaurantTheme.colors.placeholder,
+    fontSize: RestaurantTheme.typography.hint.fontSize,
+  },
+  action: { 
+    marginLeft: RestaurantTheme.spacing.small,
+  },
+  link: { 
+    color: RestaurantTheme.colors.linkText, 
+    fontWeight: 700,
+  },
 });

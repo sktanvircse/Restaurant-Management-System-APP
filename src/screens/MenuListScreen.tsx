@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import MenuItemRow from "../components/MenuItemRow";
 import { useDataStore } from "../store/data";
+import { RestaurantTheme } from "../theme";
 
 export default function MenuListScreen({ navigation }: any) {
   const data = useDataStore();
@@ -26,7 +27,8 @@ export default function MenuListScreen({ navigation }: any) {
           placeholder="Search..."
           value={search}
           onChangeText={setSearch}
-          style={styles.input}
+          placeholderTextColor={RestaurantTheme.colors.placeholder}
+          style={[styles.input, { color: RestaurantTheme.colors.text }]}
         />
         <TouchableOpacity
           style={styles.add}
@@ -60,7 +62,7 @@ export default function MenuListScreen({ navigation }: any) {
           />
         )}
         ListEmptyComponent={
-          <Text style={{ textAlign: "center", color: "#888", marginTop: 24 }}>
+          <Text style={{ textAlign: "center", color:  RestaurantTheme.colors.hintText, marginTop: 24 }}>
             No items
           </Text>
         }
@@ -79,16 +81,23 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: RestaurantTheme.colors.inputBorder,
     borderRadius: 8,
     padding: 10,
-    backgroundColor: "#fff",
+    color: RestaurantTheme.colors.text,
+    backgroundColor: RestaurantTheme.colors.background,
   },
   add: {
-    backgroundColor: "#111",
+    backgroundColor: RestaurantTheme.colors.primary,
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 8,
   },
-  addText: { color: "#fff", fontWeight: "700" },
+  addText: { color: RestaurantTheme.colors.buttonText, fontWeight: "700" },
+  emptyText: {
+    textAlign: "center",
+    color: RestaurantTheme.colors.hintText,
+    marginTop: 24,
+    fontSize: 800,
+  },
 });

@@ -11,5 +11,34 @@ export const RestaurantTheme = {
     cardBorder: '#F0E6D2',    // Soft warm border
     buttonText: '#FFFFFF',    // White
     hintText: '#A38B74',      // Warm gray
-  }
+    linkText: "#4086e2ff"
+  },
+  spacing: {
+    small: 8,
+    medium: 16,
+    large: 24,
+    xlarge: 32,
+  },
+  borderRadius: {
+    small: 8,
+    medium: 12,
+    large: 16,
+  },
+  typography: {
+    title: {
+      fontSize: 28,
+      fontWeight: '800',
+    },
+    label: {
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    button: {
+      fontSize: 16,
+      fontWeight: '700',
+    },
+    hint: {
+      fontSize: 14,
+    },
+  },
 };
