@@ -12,6 +12,7 @@ import Header from "../components/Header";
 import OrderItemRow from "../components/OrderItemRow";
 import { useDataStore } from "../store/data";
 import { formatCurrency } from "../utils/currency";
+import { RestaurantTheme } from "../theme";
 
 export default function OrderCreateScreen({ route, navigation }: any) {
   const data = useDataStore();
@@ -39,15 +40,17 @@ export default function OrderCreateScreen({ route, navigation }: any) {
 
   if (!order) {
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, backgroundColor: RestaurantTheme.colors.background }}>
         <Header title="Order" />
-        <Text style={{ padding: 16, color: "#c00" }}>Order not found</Text>
+        <Text style={{ padding: 16, color: RestaurantTheme.colors.primary }}>
+          Order not found
+        </Text>
       </View>
     );
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: RestaurantTheme.colors.background }}>
       <View style={styles.container}>
         <Text style={styles.sectionTitle}>Add Items</Text>
         <View style={styles.searchRow}>
@@ -55,7 +58,8 @@ export default function OrderCreateScreen({ route, navigation }: any) {
             placeholder="Search menu..."
             value={search}
             onChangeText={setSearch}
-            style={styles.input}
+            placeholderTextColor={RestaurantTheme.colors.placeholder}
+            style={[styles.input, { color: RestaurantTheme.colors.text }]}
           />
         </View>
         <FlatList
@@ -66,13 +70,17 @@ export default function OrderCreateScreen({ route, navigation }: any) {
               onPress={() => data.addItemToOrder(orderId, item.id, 1)}
               style={styles.menuRow}
             >
-              <Text style={{ flex: 1 }}>{item.name}</Text>
-              <Text>{formatCurrency(item.price)}</Text>
+              <Text style={{ flex: 1, color: RestaurantTheme.colors.text }}>
+                {item.name}
+              </Text>
+              <Text style={{ color: RestaurantTheme.colors.primary }}>
+                {formatCurrency(item.price)}
+              </Text>
             </TouchableOpacity>
           )}
           ListEmptyComponent={
-            <Text style={{ textAlign: "center", color: "#888" }}>
-              No items
+            <Text style={styles.emptyText}>
+              No available menu items
             </Text>
           }
           style={{ maxHeight: 220 }}
@@ -98,15 +106,17 @@ export default function OrderCreateScreen({ route, navigation }: any) {
             />
           )}
           ListEmptyComponent={
-            <Text style={{ textAlign: "center", color: "#888" }}>
-              No items yet
+            <Text style={styles.emptyText}>
+              No items added yet
             </Text>
           }
         />
 
         <View style={styles.totalRow}>
           <Text style={styles.totalText}>Total</Text>
-          <Text style={styles.totalText}>{formatCurrency(total)}</Text>
+          <Text style={[styles.totalText, { color: RestaurantTheme.colors.primary }]}>
+            {formatCurrency(total)}
+          </Text>
         </View>
 
         <TouchableOpacity
@@ -128,37 +138,65 @@ export default function OrderCreateScreen({ route, navigation }: any) {
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 16, gap: 8 },
-  sectionTitle: { fontWeight: "700", marginTop: 8 },
-  searchRow: { flexDirection: "row", gap: 8 },
+  container: {
+    padding: RestaurantTheme.spacing.medium,
+    gap: RestaurantTheme.spacing.small
+  },
+  sectionTitle: {
+    fontWeight: 700,
+    color: RestaurantTheme.colors.text,
+    marginTop: RestaurantTheme.spacing.small,
+    fontSize: RestaurantTheme.typography.label.fontSize,
+  },
+  searchRow: {
+    flexDirection: "row",
+    gap: RestaurantTheme.spacing.small
+  },
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: RestaurantTheme.colors.inputBorder,
     borderRadius: 8,
     padding: 10,
-    backgroundColor: "#fff",
+    color: RestaurantTheme.colors.text,
+    backgroundColor: RestaurantTheme.colors.background,
+    fontSize: 16,
   },
   menuRow: {
-    paddingVertical: 10,
-    paddingHorizontal: 12,
+    paddingVertical: RestaurantTheme.spacing.small,
+    paddingHorizontal: RestaurantTheme.spacing.medium,
     flexDirection: "row",
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "#eee",
+    borderBottomColor: RestaurantTheme.colors.cardBorder,
   },
   totalRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingVertical: 8,
+    paddingVertical: RestaurantTheme.spacing.small,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: "#eee",
+    borderTopColor: RestaurantTheme.colors.cardBorder,
   },
-  totalText: { fontSize: 18, fontWeight: "800" },
+  totalText: {
+    fontSize: RestaurantTheme.typography.title.fontSize,
+    fontWeight: 800,
+    color: RestaurantTheme.colors.text,
+  },
   completeBtn: {
-    backgroundColor: "#0a7",
-    padding: 14,
-    borderRadius: 10,
-    marginTop: 8,
+    backgroundColor: RestaurantTheme.colors.primary,
+    padding: RestaurantTheme.spacing.medium,
+    borderRadius: RestaurantTheme.borderRadius.medium,
+    marginTop: RestaurantTheme.spacing.small,
   },
-  completeText: { color: "#fff", textAlign: "center", fontWeight: "700" },
+  completeText: {
+    color: RestaurantTheme.colors.buttonText,
+    textAlign: "center",
+    fontWeight: 700,
+    fontSize: RestaurantTheme.typography.button.fontSize,
+  },
+  emptyText: {
+    textAlign: "center",
+    color: RestaurantTheme.colors.hintText,
+    marginVertical: RestaurantTheme.spacing.medium,
+    fontSize: RestaurantTheme.typography.hint.fontSize,
+  },
 });
