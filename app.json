@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "restaurant-management",
-    "slug": "restaurant-management",
+    "name": "RMS Staff",
+    "slug": "restaurant-management-system",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/restaurant.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -28,8 +28,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "61b7f67e-a1d4-445c-8fd6-de3814d37465"
+        "projectId": "30e175f0-e9fa-4e5e-b829-be126d819ce4"
       }
-    }
+    },
+    "owner": "sktanvir26"
   }
 }
