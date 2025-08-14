@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { useAuthStore } from "../store/auth";
 import { useDataStore } from "../store/data";
+import { RestaurantTheme } from "../theme";
 
 export default function DashboardScreen() {
   const data = useDataStore();
@@ -47,8 +48,8 @@ export default function DashboardScreen() {
 function Card({ label, value }: { label: string; value: number }) {
   return (
     <View style={styles.card}>
-      <Text style={styles.value}>{value}</Text>
       <Text style={styles.label}>{label}</Text>
+      <Text style={styles.value}>{value}</Text>
     </View>
   );
 }
@@ -59,28 +60,31 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     marginHorizontal: 4,
-    backgroundColor: "#fff",
+    backgroundColor: RestaurantTheme.colors.cardBackground,
     padding: 16,
     borderRadius: 12,
     alignItems: "center",
-    elevation: 2
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: RestaurantTheme.colors.cardBorder,
   },
-  value: { fontSize: 28, fontWeight: "800" },
-  label: { color: "#666", marginTop: 4, },
+  value: { fontSize: 28, fontWeight: "800", color: RestaurantTheme.colors.text },
+  label: { color: RestaurantTheme.colors.text, marginBottom: 5, fontSize: 12 },
 
-  // Fixed button styles
   logoutContainer: {
     padding: 16,
-    backgroundColor: "#f6f6f6",
   },
   logout: {
-    backgroundColor: "#e33",
-    padding: 12,
+    backgroundColor: RestaurantTheme.colors.primary,
+    padding: 16,
     borderRadius: 10,
+    marginTop: 16,
+    elevation: 2,
   },
   logoutText: {
-    color: "#fff",
+    color: RestaurantTheme.colors.buttonText,
     textAlign: "center",
     fontWeight: "700",
+    fontSize: 16,
   },
 });
