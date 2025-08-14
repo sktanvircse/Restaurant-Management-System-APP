@@ -1,17 +1,15 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  TextInput,
   Alert,
+  FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import Header from "../components/Header";
-import { useDataStore } from "../store/data";
 import TableRow from "../components/TableRow";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useDataStore } from "../store/data";
 
 export default function TablesScreen({ navigation }: any) {
   const data = useDataStore();
@@ -25,53 +23,50 @@ export default function TablesScreen({ navigation }: any) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ flex: 1 }}>
-        <Header title="Tables" />
-        <View style={styles.addRow}>
-          <TextInput
-            placeholder="New table name"
-            value={name}
-            onChangeText={setName}
-            style={styles.input}
-          />
-          <TouchableOpacity style={styles.add} onPress={onAdd}>
-            <Text style={styles.addText}>Add</Text>
-          </TouchableOpacity>
-        </View>
-        <FlatList
-          data={data.tables}
-          keyExtractor={(t) => t.id}
-          renderItem={({ item }) => (
-            <TableRow
-              table={item}
-              onOpen={async () => {
-                const orderId = await data.createOrderForTable(item.id);
-                navigation.navigate("OrderCreate", {
-                  orderId,
-                  tableId: item.id,
-                });
-              }}
-              onDelete={() =>
-                Alert.alert("Delete table?", item.name, [
-                  { text: "Cancel", style: "cancel" },
-                  {
-                    text: "Delete",
-                    style: "destructive",
-                    onPress: () => data.deleteTable(item.id),
-                  },
-                ])
-              }
-            />
-          )}
-          ListEmptyComponent={
-            <Text style={{ textAlign: "center", color: "#888", marginTop: 24 }}>
-              No tables
-            </Text>
-          }
+    <View style={{ flex: 1 }}>
+      <View style={styles.addRow}>
+        <TextInput
+          placeholder="New table name"
+          value={name}
+          onChangeText={setName}
+          style={styles.input}
         />
+        <TouchableOpacity style={styles.add} onPress={onAdd}>
+          <Text style={styles.addText}>Add</Text>
+        </TouchableOpacity>
       </View>
-    </SafeAreaView>
+      <FlatList
+        data={data.tables}
+        keyExtractor={(t) => t.id}
+        renderItem={({ item }) => (
+          <TableRow
+            table={item}
+            onOpen={async () => {
+              const orderId = await data.createOrderForTable(item.id);
+              navigation.navigate("OrderCreate", {
+                orderId,
+                tableId: item.id,
+              });
+            }}
+            onDelete={() =>
+              Alert.alert("Delete table?", item.name, [
+                { text: "Cancel", style: "cancel" },
+                {
+                  text: "Delete",
+                  style: "destructive",
+                  onPress: () => data.deleteTable(item.id),
+                },
+              ])
+            }
+          />
+        )}
+        ListEmptyComponent={
+          <Text style={{ textAlign: "center", color: "#888", marginTop: 24 }}>
+            No tables
+          </Text>
+        }
+      />
+    </View>
   );
 }
 

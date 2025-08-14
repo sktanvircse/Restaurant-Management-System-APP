@@ -1,15 +1,13 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
-  View,
-  Text,
+  Alert,
   StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
-  Alert,
+  View,
 } from "react-native";
-import Header from "../components/Header";
 import { useDataStore } from "../store/data";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function MenuEditScreen({ route, navigation }: any) {
   const data = useDataStore();
@@ -56,46 +54,41 @@ export default function MenuEditScreen({ route, navigation }: any) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ flex: 1 }}>
-        <Header
-          title={mode === "create" ? "Add Menu Item" : "Edit Menu Item"}
+    <View style={{ flex: 1 }}>
+      <View style={styles.form}>
+        <Text style={styles.label}>Name</Text>
+        <TextInput
+          value={name}
+          onChangeText={setName}
+          style={styles.input}
+          placeholder="e.g. Caesar Salad"
         />
-        <View style={styles.form}>
-          <Text style={styles.label}>Name</Text>
-          <TextInput
-            value={name}
-            onChangeText={setName}
-            style={styles.input}
-            placeholder="e.g. Caesar Salad"
-          />
-          <Text style={styles.label}>Price ($)</Text>
-          <TextInput
-            value={price}
-            onChangeText={setPrice}
-            style={styles.input}
-            keyboardType="decimal-pad"
-            placeholder="9.99"
-          />
-          <Text style={styles.label}>Category</Text>
-          <TextInput
-            value={category}
-            onChangeText={setCategory}
-            style={styles.input}
-            placeholder="Mains / Drinks ..."
-          />
-          <TouchableOpacity
-            onPress={() => setAvailable((v) => !v)}
-            style={styles.switch}
-          >
-            <Text>{available ? "Available" : "Unavailable"}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={onSave} style={styles.button}>
-            <Text style={styles.buttonText}>Save</Text>
-          </TouchableOpacity>
-        </View>
+        <Text style={styles.label}>Price ($)</Text>
+        <TextInput
+          value={price}
+          onChangeText={setPrice}
+          style={styles.input}
+          keyboardType="decimal-pad"
+          placeholder="9.99"
+        />
+        <Text style={styles.label}>Category</Text>
+        <TextInput
+          value={category}
+          onChangeText={setCategory}
+          style={styles.input}
+          placeholder="Mains / Drinks ..."
+        />
+        <TouchableOpacity
+          onPress={() => setAvailable((v) => !v)}
+          style={styles.switch}
+        >
+          <Text>{available ? "Available" : "Unavailable"}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onSave} style={styles.button}>
+          <Text style={styles.buttonText}>Save</Text>
+        </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 

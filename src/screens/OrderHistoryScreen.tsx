@@ -1,16 +1,14 @@
-import React, { useMemo, useState } from "react";
+import { format } from "date-fns";
+import { useMemo, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
   FlatList,
+  StyleSheet,
+  Text,
   TouchableOpacity,
+  View,
 } from "react-native";
-import Header from "../components/Header";
 import { useDataStore } from "../store/data";
 import { formatCurrency } from "../utils/currency";
-import { format } from "date-fns";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function OrderHistoryScreen() {
   const data = useDataStore();
@@ -34,53 +32,50 @@ export default function OrderHistoryScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ flex: 1 }}>
-        <Header title="Orders" />
-        <View style={styles.filters}>
-          <FilterButton
-            label="Active"
-            active={filter === "active"}
-            onPress={() => setFilter("active")}
-          />
-          <FilterButton
-            label="Completed"
-            active={filter === "completed"}
-            onPress={() => setFilter("completed")}
-          />
-          <FilterButton
-            label="All"
-            active={filter === "all"}
-            onPress={() => setFilter("all")}
-          />
-        </View>
-        <FlatList
-          data={orders}
-          keyExtractor={(o) => o.id}
-          renderItem={({ item }) => (
-            <View style={styles.card}>
-              <Text style={styles.title}>
-                Table{" "}
-                {data.tables.find((t) => t.id === item.tableId)?.name ?? ""}
-              </Text>
-              <Text style={styles.meta}>
-                {item.status === "active" ? "Active" : "Completed"} •{" "}
-                {format(new Date(item.createdAt), "PPp")}
-              </Text>
-              <Text style={styles.total}>
-                Total {formatCurrency(totalOf(item.id))}
-              </Text>
-            </View>
-          )}
-          ListEmptyComponent={
-            <Text style={{ textAlign: "center", color: "#888", marginTop: 24 }}>
-              No orders
-            </Text>
-          }
-          contentContainerStyle={{ padding: 12, gap: 8 }}
+    <View style={{ flex: 1 }}>
+      <View style={styles.filters}>
+        <FilterButton
+          label="Active"
+          active={filter === "active"}
+          onPress={() => setFilter("active")}
+        />
+        <FilterButton
+          label="Completed"
+          active={filter === "completed"}
+          onPress={() => setFilter("completed")}
+        />
+        <FilterButton
+          label="All"
+          active={filter === "all"}
+          onPress={() => setFilter("all")}
         />
       </View>
-    </SafeAreaView>
+      <FlatList
+        data={orders}
+        keyExtractor={(o) => o.id}
+        renderItem={({ item }) => (
+          <View style={styles.card}>
+            <Text style={styles.title}>
+              Table{" "}
+              {data.tables.find((t) => t.id === item.tableId)?.name ?? ""}
+            </Text>
+            <Text style={styles.meta}>
+              {item.status === "active" ? "Active" : "Completed"} •{" "}
+              {format(new Date(item.createdAt), "PPp")}
+            </Text>
+            <Text style={styles.total}>
+              Total {formatCurrency(totalOf(item.id))}
+            </Text>
+          </View>
+        )}
+        ListEmptyComponent={
+          <Text style={{ textAlign: "center", color: "#888", marginTop: 24 }}>
+            No orders
+          </Text>
+        }
+        contentContainerStyle={{ padding: 12, gap: 8 }}
+      />
+    </View>
   );
 }
 

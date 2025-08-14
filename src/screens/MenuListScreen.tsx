@@ -1,17 +1,15 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  TextInput,
   Alert,
+  FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import Header from "../components/Header";
-import { useDataStore } from "../store/data";
 import MenuItemRow from "../components/MenuItemRow";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useDataStore } from "../store/data";
 
 export default function MenuListScreen({ navigation }: any) {
   const data = useDataStore();
@@ -22,55 +20,52 @@ export default function MenuListScreen({ navigation }: any) {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ flex: 1 }}>
-        <Header title="Menu" />
-        <View style={styles.searchRow}>
-          <TextInput
-            placeholder="Search..."
-            value={search}
-            onChangeText={setSearch}
-            style={styles.input}
-          />
-          <TouchableOpacity
-            style={styles.add}
-            onPress={() => navigation.navigate("MenuEdit", { mode: "create" })}
-          >
-            <Text style={styles.addText}>Add</Text>
-          </TouchableOpacity>
-        </View>
-        <FlatList
-          data={items}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <MenuItemRow
-              item={item}
-              onEdit={() =>
-                navigation.navigate("MenuEdit", { mode: "edit", id: item.id })
-              }
-              onToggle={(available) =>
-                data.updateMenuItem(item.id, { available })
-              }
-              onDelete={() =>
-                Alert.alert("Delete item?", item.name, [
-                  { text: "Cancel", style: "cancel" },
-                  {
-                    text: "Delete",
-                    style: "destructive",
-                    onPress: () => data.deleteMenuItem(item.id),
-                  },
-                ])
-              }
-            />
-          )}
-          ListEmptyComponent={
-            <Text style={{ textAlign: "center", color: "#888", marginTop: 24 }}>
-              No items
-            </Text>
-          }
+    <View style={{ flex: 1 }}>
+      <View style={styles.searchRow}>
+        <TextInput
+          placeholder="Search..."
+          value={search}
+          onChangeText={setSearch}
+          style={styles.input}
         />
+        <TouchableOpacity
+          style={styles.add}
+          onPress={() => navigation.navigate("MenuEdit", { mode: "create" })}
+        >
+          <Text style={styles.addText}>Add</Text>
+        </TouchableOpacity>
       </View>
-    </SafeAreaView>
+      <FlatList
+        data={items}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <MenuItemRow
+            item={item}
+            onEdit={() =>
+              navigation.navigate("MenuEdit", { mode: "edit", id: item.id })
+            }
+            onToggle={(available) =>
+              data.updateMenuItem(item.id, { available })
+            }
+            onDelete={() =>
+              Alert.alert("Delete item?", item.name, [
+                { text: "Cancel", style: "cancel" },
+                {
+                  text: "Delete",
+                  style: "destructive",
+                  onPress: () => data.deleteMenuItem(item.id),
+                },
+              ])
+            }
+          />
+        )}
+        ListEmptyComponent={
+          <Text style={{ textAlign: "center", color: "#888", marginTop: 24 }}>
+            No items
+          </Text>
+        }
+      />
+    </View>
   );
 }
 

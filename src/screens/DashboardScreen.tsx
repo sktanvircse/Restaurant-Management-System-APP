@@ -1,15 +1,13 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
   ScrollView,
+  StyleSheet,
+  Text,
   TouchableOpacity,
+  View,
 } from "react-native";
-import Header from "../components/Header";
-import { useDataStore } from "../store/data";
 import { useAuthStore } from "../store/auth";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useDataStore } from "../store/data";
 
 export default function DashboardScreen() {
   const data = useDataStore();
@@ -27,25 +25,22 @@ export default function DashboardScreen() {
   }, [data.orders, data.menuItems, data.tables]);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <Header title="Dashboard" />
-      <View style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={styles.wrap}>
-          <View style={styles.grid}>
-            <Card label="Active Orders" value={totals.activeOrders} />
-            <Card label="Active Tables" value={totals.activeTables} />
-            <Card label="Menu Items" value={totals.menuCount} />
-          </View>
-        </ScrollView>
-
-        {/* Fixed Logout Button */}
-        <View style={styles.logoutContainer}>
-          <TouchableOpacity onPress={logout} style={styles.logout}>
-            <Text style={styles.logoutText}>Logout</Text>
-          </TouchableOpacity>
+    <View style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={styles.wrap}>
+        <View style={styles.grid}>
+          <Card label="Active Orders" value={totals.activeOrders} />
+          <Card label="Active Tables" value={totals.activeTables} />
+          <Card label="Menu Items" value={totals.menuCount} />
         </View>
+      </ScrollView>
+
+      {/* Fixed Logout Button */}
+      <View style={styles.logoutContainer}>
+        <TouchableOpacity onPress={logout} style={styles.logout}>
+          <Text style={styles.logoutText}>Logout</Text>
+        </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
