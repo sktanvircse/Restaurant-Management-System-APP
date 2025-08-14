@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useDataStore } from "../store/data";
 import { formatCurrency } from "../utils/currency";
+import { RestaurantTheme } from "../theme";
 
 export default function OrderHistoryScreen() {
   const data = useDataStore();
@@ -54,7 +55,10 @@ export default function OrderHistoryScreen() {
         data={orders}
         keyExtractor={(o) => o.id}
         renderItem={({ item }) => (
-          <View style={styles.card}>
+          <View style={[
+            styles.card,
+            item.status === 'active' && styles.activeCard
+          ]}>
             <Text style={styles.title}>
               Table{" "}
               {data.tables.find((t) => t.id === item.tableId)?.name ?? ""}
@@ -69,11 +73,11 @@ export default function OrderHistoryScreen() {
           </View>
         )}
         ListEmptyComponent={
-          <Text style={{ textAlign: "center", color: "#888", marginTop: 24 }}>
+          <Text style={{ textAlign: "center", color: RestaurantTheme.colors.hintText, marginTop: 24 }}>
             No orders
           </Text>
         }
-        contentContainerStyle={{ padding: 12, gap: 8 }}
+        contentContainerStyle={styles.listContent}
       />
     </View>
   );
@@ -101,23 +105,61 @@ function FilterButton({
 }
 
 const styles = StyleSheet.create({
-  filters: { flexDirection: "row", gap: 8, padding: 12 },
+  filters: {
+    flexDirection: "row",
+    gap: RestaurantTheme.spacing.small,
+    padding: RestaurantTheme.spacing.medium,
+    backgroundColor: RestaurantTheme.colors.cardBackground,
+    borderBottomWidth: 1,
+    borderBottomColor: RestaurantTheme.colors.cardBorder,
+  },
   filter: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: "#eee",
-    borderRadius: 16,
+    paddingHorizontal: RestaurantTheme.spacing.medium,
+    paddingVertical: RestaurantTheme.spacing.small,
+    backgroundColor: RestaurantTheme.colors.background,
+    borderRadius: RestaurantTheme.borderRadius.large,
+    borderWidth: 1,
+    borderColor: RestaurantTheme.colors.inputBorder,
   },
-  filterActive: { backgroundColor: "#111" },
-  filterText: { color: "#111" },
-  filterTextActive: { color: "#fff" },
+  filterActive: {
+    backgroundColor: RestaurantTheme.colors.primary,
+    borderColor: RestaurantTheme.colors.primary,
+  },
+  filterText: {
+    color: RestaurantTheme.colors.text,
+    fontWeight: 700,
+  },
+  filterTextActive: {
+    color: RestaurantTheme.colors.buttonText,
+  },
+  listContent: {
+    padding: RestaurantTheme.spacing.medium,
+    gap: RestaurantTheme.spacing.small
+  },
   card: {
-    backgroundColor: "#fff",
-    padding: 12,
-    borderRadius: 12,
-    elevation: 2,
+    backgroundColor: RestaurantTheme.colors.cardBackground,
+    padding: RestaurantTheme.spacing.medium,
+    borderRadius: RestaurantTheme.borderRadius.medium,
+    borderWidth: 1,
+    borderColor: RestaurantTheme.colors.cardBorder,
   },
-  title: { fontSize: 16, fontWeight: "700" },
-  meta: { color: "#666", marginTop: 4 },
-  total: { fontWeight: "800", marginTop: 8 },
+  activeCard: {
+    borderLeftWidth: 4,
+    borderLeftColor: RestaurantTheme.colors.primary,
+  },
+  title: { 
+    fontSize: RestaurantTheme.typography.label.fontSize,
+    fontWeight: 800,
+    color: RestaurantTheme.colors.text,
+  },
+  meta: { 
+    color: RestaurantTheme.colors.placeholder,
+    marginTop: RestaurantTheme.spacing.small,
+    fontSize: RestaurantTheme.typography.hint.fontSize,
+  },
+  total: { 
+    fontWeight: 800,
+    marginTop: RestaurantTheme.spacing.small,
+    color: RestaurantTheme.colors.primary,
+  },
 });
