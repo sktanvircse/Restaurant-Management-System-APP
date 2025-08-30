@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { storageSave } from './storage';
-import { newId } from '../utils/ids';
+import { create } from "zustand";
+import { storageSave } from "./storage";
+import { newId } from "../utils/ids";
 
 export type MenuItem = {
   id: string;
@@ -13,7 +13,7 @@ export type MenuItem = {
 export type Table = {
   id: string;
   name: string;
-  status: 'available' | 'occupied';
+  status: "available" | "booked" | "occupied";
   activeOrderId?: string | null;
 };
 
@@ -27,7 +27,7 @@ export type Order = {
   id: string;
   tableId: string;
   items: OrderItem[];
-  status: 'active' | 'completed';
+  status: "pending" | "sentToKitchen" | "confirmed" | "completed";
   createdAt: string; // ISO
   completedAt?: string | null;
 };
@@ -42,32 +42,58 @@ type DataStore = DataState & {
   hydrate: (s: DataState) => void;
   save: () => Promise<void>;
   // Menu
-  addMenuItem: (input: Omit<MenuItem, 'id'>) => Promise<void>;
-  updateMenuItem: (id: string, patch: Partial<Omit<MenuItem, 'id'>>) => Promise<void>;
+  addMenuItem: (input: Omit<MenuItem, "id">) => Promise<void>;
+  updateMenuItem: (
+    id: string,
+    patch: Partial<Omit<MenuItem, "id">>
+  ) => Promise<void>;
   deleteMenuItem: (id: string) => Promise<void>;
   // Tables
   addTable: (name: string) => Promise<void>;
   deleteTable: (id: string) => Promise<void>;
+  bookTable: (tableId: string) => Promise<void>;
+  occupyTable: (tableId: string) => Promise<void>;
+  releaseTable: (tableId: string) => Promise<void>;
   // Orders
   createOrderForTable: (tableId: string) => Promise<string>; // returns orderId
-  addItemToOrder: (orderId: string, menuItemId: string, quantity: number) => Promise<void>;
-  updateOrderItemQty: (orderId: string, orderItemId: string, quantity: number) => Promise<void>;
+  addItemToOrder: (
+    orderId: string,
+    menuItemId: string,
+    quantity: number
+  ) => Promise<void>;
+  updateOrderItemQty: (
+    orderId: string,
+    orderItemId: string,
+    quantity: number
+  ) => Promise<void>;
   removeOrderItem: (orderId: string, orderItemId: string) => Promise<void>;
   completeOrder: (orderId: string) => Promise<void>;
 };
 
-const KEY_DATA = '@rm/data';
+const KEY_DATA = "@rm/data";
 
 export const useDataStore = create<DataStore>((set, get) => ({
   menuItems: [
-    { id: newId('m'), name: 'Burger', price: 8.99, category: 'Main', available: true },
-    { id: newId('m'), name: 'Pizza', price: 12.5, category: 'Main', available: true },
-    { id: newId('m'), name: 'Coke', price: 2.5, category: 'Drinks', available: true },
+    {
+      id: newId("m"),
+      name: "Burger",
+      price: 8.99,
+      category: "Main",
+      available: true,
+    },
+    {
+      id: newId("m"),
+      name: "Pizza",
+      price: 12.5,
+      category: "Main",
+      available: true,
+    },
+    { id: newId("m"), name: "Coke", price: 2.5, category: "Drinks", available: true },
   ],
   tables: [
-    { id: newId('t'), name: 'Table 1', status: 'available', activeOrderId: null },
-    { id: newId('t'), name: 'Table 2', status: 'available', activeOrderId: null },
-    { id: newId('t'), name: 'Table 3', status: 'available', activeOrderId: null },
+    { id: newId("t"), name: "Table 1", status: "available", activeOrderId: null },
+    { id: newId("t"), name: "Table 2", status: "available", activeOrderId: null },
+    { id: newId("t"), name: "Table 3", status: "available", activeOrderId: null },
   ],
   orders: [],
 
@@ -77,49 +103,92 @@ export const useDataStore = create<DataStore>((set, get) => ({
     await storageSave(KEY_DATA, { menuItems, tables, orders });
   },
 
-  // Menu
+  // ------------------
+  // MENU
+  // ------------------
   addMenuItem: async (input) => {
-    const newItem: MenuItem = { ...input, id: newId('m') };
+    const newItem: MenuItem = { ...input, id: newId("m") };
     set({ menuItems: [...get().menuItems, newItem] });
     await get().save();
   },
+
   updateMenuItem: async (id, patch) => {
     set({
-      menuItems: get().menuItems.map((m) => (m.id === id ? { ...m, ...patch } : m)),
+      menuItems: get().menuItems.map((m) =>
+        m.id === id ? { ...m, ...patch } : m
+      ),
     });
     await get().save();
   },
+
   deleteMenuItem: async (id) => {
     set({ menuItems: get().menuItems.filter((m) => m.id !== id) });
     await get().save();
   },
 
-  // Tables
+  // ------------------
+  // TABLES
+  // ------------------
   addTable: async (name) => {
-    const t: Table = { id: newId('t'), name, status: 'available', activeOrderId: null };
+    const t: Table = {
+      id: newId("t"),
+      name,
+      status: "available",
+      activeOrderId: null,
+    };
     set({ tables: [...get().tables, t] });
     await get().save();
   },
+
   deleteTable: async (id) => {
     set({ tables: get().tables.filter((t) => t.id !== id) });
     await get().save();
   },
 
-  // Orders
+  bookTable: async (tableId) => {
+    set({
+      tables: get().tables.map((t) =>
+        t.id === tableId ? { ...t, status: "booked" } : t
+      ),
+    });
+    await get().save();
+  },
+
+  occupyTable: async (tableId) => {
+    set({
+      tables: get().tables.map((t) =>
+        t.id === tableId ? { ...t, status: "occupied" } : t
+      ),
+    });
+    await get().save();
+  },
+
+  releaseTable: async (tableId) => {
+    set({
+      tables: get().tables.map((t) =>
+        t.id === tableId ? { ...t, status: "available", activeOrderId: null } : t
+      ),
+    });
+    await get().save();
+  },
+
+  // ------------------
+  // ORDERS
+  // ------------------
   createOrderForTable: async (tableId) => {
-    const existing = get().orders.find((o) => o.tableId === tableId && o.status === 'active');
-    if (existing) return existing.id;
     const order: Order = {
-      id: newId('o'),
+      id: newId("o"),
       tableId,
       items: [],
-      status: 'active',
+      status: "pending",
       createdAt: new Date().toISOString(),
     };
     set({ orders: [order, ...get().orders] });
     set({
       tables: get().tables.map((t) =>
-        t.id === tableId ? { ...t, status: 'occupied', activeOrderId: order.id } : t
+        t.id === tableId
+          ? { ...t, status: "occupied", activeOrderId: order.id }
+          : t
       ),
     });
     await get().save();
@@ -135,11 +204,13 @@ export const useDataStore = create<DataStore>((set, get) => ({
           return {
             ...o,
             items: o.items.map((it) =>
-              it.id === existing.id ? { ...it, quantity: it.quantity + quantity } : it
+              it.id === existing.id
+                ? { ...it, quantity: it.quantity + quantity }
+                : it
             ),
           };
         }
-        const item: OrderItem = { id: newId('oi'), menuItemId, quantity };
+        const item: OrderItem = { id: newId("oi"), menuItemId, quantity };
         return { ...o, items: [...o.items, item] };
       }),
     });
@@ -152,7 +223,9 @@ export const useDataStore = create<DataStore>((set, get) => ({
         if (o.id !== orderId) return o;
         return {
           ...o,
-          items: o.items.map((it) => (it.id === orderItemId ? { ...it, quantity } : it)),
+          items: o.items.map((it) =>
+            it.id === orderItemId ? { ...it, quantity } : it
+          ),
         };
       }),
     });
@@ -174,12 +247,16 @@ export const useDataStore = create<DataStore>((set, get) => ({
     if (!order) return;
     set({
       orders: get().orders.map((o) =>
-        o.id === orderId ? { ...o, status: 'completed', completedAt: new Date().toISOString() } : o
+        o.id === orderId
+          ? { ...o, status: "completed", completedAt: new Date().toISOString() }
+          : o
       ),
     });
     set({
       tables: get().tables.map((t) =>
-        t.id === order.tableId ? { ...t, status: 'available', activeOrderId: null } : t
+        t.id === order.tableId
+          ? { ...t, status: "available", activeOrderId: null }
+          : t
       ),
     });
     await get().save();

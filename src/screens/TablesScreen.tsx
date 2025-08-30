@@ -37,33 +37,42 @@ export default function TablesScreen({ navigation }: any) {
           <Text style={styles.addText}>Add</Text>
         </TouchableOpacity>
       </View>
+
       <FlatList
         data={data.tables}
         keyExtractor={(t) => t.id}
         renderItem={({ item }) => (
-          <TableRow
-            table={item}
-            onOpen={async () => {
-              const orderId = await data.createOrderForTable(item.id);
-              navigation.navigate("OrderCreate", {
-                orderId,
-                tableId: item.id,
-              });
-            }}
-            onDelete={() =>
-              Alert.alert("Delete table?", item.name, [
-                { text: "Cancel", style: "cancel" },
-                {
-                  text: "Delete",
-                  style: "destructive",
-                  onPress: () => data.deleteTable(item.id),
-                },
-              ])
-            }
-          />
+          <View>
+            <TableRow
+              table={item}
+              onOpen={async () => {
+                const orderId = await data.createOrderForTable(item.id);
+                navigation.navigate("OrderCreate", {
+                  orderId,
+                  tableId: item.id,
+                });
+              }}
+              onDelete={() =>
+                Alert.alert("Delete table?", item.name, [
+                  { text: "Cancel", style: "cancel" },
+                  {
+                    text: "Delete",
+                    style: "destructive",
+                    onPress: () => data.deleteTable(item.id),
+                  },
+                ])
+              }
+            />
+          </View>
         )}
         ListEmptyComponent={
-          <Text style={{ textAlign: "center", color: RestaurantTheme.colors.hintText, marginTop: 24 }}>
+          <Text
+            style={{
+              textAlign: "center",
+              color: RestaurantTheme.colors.hintText,
+              marginTop: 24,
+            }}
+          >
             No tables
           </Text>
         }
@@ -91,4 +100,21 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   addText: { color: RestaurantTheme.colors.buttonText, fontWeight: "700" },
+  statusButtons: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    gap: 8,
+  },
+  statusBtn: {
+    backgroundColor: RestaurantTheme.colors.primary,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  statusBtnText: {
+    color: RestaurantTheme.colors.buttonText,
+    fontWeight: "600",
+  },
 });
