@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { storageSave } from "./storage";
 import { newId } from "../utils/ids";
+import { Alert } from "react-native";
 
 export type MenuItem = {
   id: string;
@@ -114,7 +115,23 @@ export const useDataStore = create<DataStore>((set, get) => ({
     await get().save();
   },
 
-  updateMenuItem: async (id, patch) => {
+  updateMenuItem: async (id: string, patch: Partial<MenuItem>) => {
+    const orders = get().orders;
+    const hasActiveOrder = orders.some(
+      (o) =>
+        o.status !== "completed" && o.items.some((it) => it.menuItemId === id)
+    );
+
+    if (hasActiveOrder) {
+      Alert.alert(
+        "Cannot Update",
+        "This menu item is part of an active order and cannot be updated.",
+        [{ text: "OK", style: "default" }]
+      );
+      return;
+    }
+
+    // Safe to update
     set({
       menuItems: get().menuItems.map((m) =>
         m.id === id ? { ...m, ...patch } : m
@@ -123,7 +140,23 @@ export const useDataStore = create<DataStore>((set, get) => ({
     await get().save();
   },
 
-  deleteMenuItem: async (id) => {
+  deleteMenuItem: async (id: string) => {
+    const orders = get().orders;
+    const hasOrder = orders.some(
+      (o) =>
+        o.status !== "completed" && o.items.some((it) => it.menuItemId === id)
+    );
+
+    if (hasOrder) {
+      Alert.alert(
+        "Cannot Delete",
+        "This menu item is part of an active order and cannot be deleted.",
+        [{ text: "OK", style: "default" }]
+      );
+      return;
+    }
+
+    // Safe to delete
     set({ menuItems: get().menuItems.filter((m) => m.id !== id) });
     await get().save();
   },
@@ -142,7 +175,20 @@ export const useDataStore = create<DataStore>((set, get) => ({
     await get().save();
   },
 
-  deleteTable: async (id) => {
+  deleteTable: async (id: string) => {
+    const orders = get().orders;
+    const hasOrder = orders.some((o) => o.tableId === id && o.status !== "completed");
+
+    if (hasOrder) {
+      Alert.alert(
+        "Cannot Delete",
+        "This table has an active order and cannot be deleted.",
+        [{ text: "OK", style: "default" }]
+      );
+      return;
+    }
+
+    // Safe to delete
     set({ tables: get().tables.filter((t) => t.id !== id) });
     await get().save();
   },
