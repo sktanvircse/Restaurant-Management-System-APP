@@ -15,23 +15,30 @@ export default function DashboardScreen() {
   const logout = useAuthStore((s) => s.logout);
 
   const totals = useMemo(() => {
-    const activeOrders = data.orders.filter(
-      (o) => o.status === "active"
-    ).length;
+    const bookedTables = data.tables.filter((t) => t.status === "booked").length;
+    const occupiedTables = data.tables.filter((t) => t.status === "occupied").length;
+    const activeOrders = data.orders.filter((o) => o.status !== "completed").length;
+    const completedOrders = data.orders.filter((o) => o.status === "completed").length;
+    const totalOrders = data.orders.length;
     const menuCount = data.menuItems.length;
-    const activeTables = data.tables.filter(
-      (t) => t.status === "occupied"
-    ).length;
-    return { activeOrders, menuCount, activeTables };
-  }, [data.orders, data.menuItems, data.tables]);
+
+    return { bookedTables, occupiedTables, activeOrders, completedOrders, totalOrders, menuCount };
+  }, [data.tables, data.orders, data.menuItems]);
 
   return (
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.wrap}>
         <View style={styles.grid}>
-          <Card label="Active Orders" value={totals.activeOrders} />
-          <Card label="Active Tables" value={totals.activeTables} />
-          <Card label="Menu Items" value={totals.menuCount} />
+          <Card label="Booked Tables" value={totals.bookedTables} color="#FFA000" />
+          <Card label="Occupied Tables" value={totals.occupiedTables} color="#E53935" />
+        </View>
+        <View style={styles.grid}>
+          <Card label="Active Orders" value={totals.activeOrders} color="#4CAF50" />
+          <Card label="Completed Orders" value={totals.completedOrders} color="#9E9E9E" />
+        </View>
+        <View style={styles.grid}>
+          <Card label="Total Orders" value={totals.totalOrders} color="#1976D2" />
+          <Card label="Menu Items" value={totals.menuCount} color="#8E24AA" />
         </View>
       </ScrollView>
 
@@ -45,21 +52,20 @@ export default function DashboardScreen() {
   );
 }
 
-function Card({ label, value }: { label: string; value: number }) {
+function Card({ label, value, color }: { label: string; value: number; color: string }) {
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { borderLeftColor: color, borderLeftWidth: 6 }]}>
       <Text style={styles.label}>{label}</Text>
-      <Text style={styles.value}>{value}</Text>
+      <Text style={[styles.value, { color }]}>{value}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { padding: 16, gap: 12 },
-  grid: { flexDirection: "row", gap: 8 },
+  wrap: { padding: 16, gap: 16 },
+  grid: { flexDirection: "row", gap: 12 },
   card: {
     flex: 1,
-    marginHorizontal: 4,
     backgroundColor: RestaurantTheme.colors.cardBackground,
     padding: 16,
     borderRadius: 12,
@@ -68,8 +74,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: RestaurantTheme.colors.cardBorder,
   },
-  value: { fontSize: 28, fontWeight: "800", color: RestaurantTheme.colors.text },
-  label: { color: RestaurantTheme.colors.text, marginBottom: 5, fontSize: 12 },
+  value: { fontSize: 28, fontWeight: "800" },
+  label: { color: RestaurantTheme.colors.text, marginBottom: 5, fontSize: 14 },
 
   logoutContainer: {
     padding: 16,
@@ -78,7 +84,6 @@ const styles = StyleSheet.create({
     backgroundColor: RestaurantTheme.colors.primary,
     padding: 16,
     borderRadius: 10,
-    marginTop: 16,
     elevation: 2,
   },
   logoutText: {
