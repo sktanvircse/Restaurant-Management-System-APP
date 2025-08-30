@@ -60,7 +60,7 @@ export default function TableRow({ table, onOpen, onDelete }: Props) {
           </TouchableOpacity>
         )}
 
-        {table.status !== 'available' && (
+        {table.status == 'booked' && (
           <TouchableOpacity
             style={styles.statusBtn}
             onPress={() => data.releaseTable(table.id)}

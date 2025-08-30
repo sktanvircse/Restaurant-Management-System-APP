@@ -54,24 +54,36 @@ export default function OrderHistoryScreen() {
       <FlatList
         data={orders}
         keyExtractor={(o) => o.id}
-        renderItem={({ item }) => (
-          <View style={[
-            styles.card,
-            item.status === 'active' && styles.activeCard
-          ]}>
-            <Text style={styles.title}>
-              Table{" "}
-              {data.tables.find((t) => t.id === item.tableId)?.name ?? ""}
-            </Text>
-            <Text style={styles.meta}>
-              {item.status === "active" ? "Active" : "Completed"} •{" "}
-              {format(new Date(item.createdAt), "PPp")}
-            </Text>
-            <Text style={styles.total}>
-              Total {formatCurrency(totalOf(item.id))}
-            </Text>
-          </View>
-        )}
+        renderItem={({ item }) => {
+          const isActive = item.status !== "completed"; // define active orders
+          return (
+            <View style={[styles.card, isActive && styles.activeCard]}>
+              <Text style={styles.title}>
+                Table{" "}
+                {data.tables.find((t) => t.id === item.tableId)?.name ?? ""}
+              </Text>
+              <Text style={styles.meta}>
+                {(() => {
+                  switch (item.status) {
+                    case "pending":
+                      return "Pending";
+                    case "sentToKitchen":
+                      return "Sent to Kitchen";
+                    case "confirmed":
+                      return "Confirmed";
+                    case "completed":
+                      return "Completed";
+                    default:
+                      return item.status;
+                  }
+                })()} • {format(new Date(item.createdAt), "PPp")}
+              </Text>
+              <Text style={styles.total}>
+                Total {formatCurrency(totalOf(item.id))}
+              </Text>
+            </View>
+          );
+        }}
         ListEmptyComponent={
           <Text style={{ textAlign: "center", color: RestaurantTheme.colors.hintText, marginTop: 24 }}>
             No orders
@@ -147,17 +159,17 @@ const styles = StyleSheet.create({
     borderLeftWidth: 4,
     borderLeftColor: RestaurantTheme.colors.primary,
   },
-  title: { 
+  title: {
     fontSize: RestaurantTheme.typography.label.fontSize,
     fontWeight: 800,
     color: RestaurantTheme.colors.text,
   },
-  meta: { 
+  meta: {
     color: RestaurantTheme.colors.placeholder,
     marginTop: RestaurantTheme.spacing.small,
     fontSize: RestaurantTheme.typography.hint.fontSize,
   },
-  total: { 
+  total: {
     fontWeight: 800,
     marginTop: RestaurantTheme.spacing.small,
     color: RestaurantTheme.colors.primary,

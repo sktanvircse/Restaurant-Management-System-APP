@@ -68,6 +68,8 @@ type DataStore = DataState & {
   ) => Promise<void>;
   removeOrderItem: (orderId: string, orderItemId: string) => Promise<void>;
   completeOrder: (orderId: string) => Promise<void>;
+  sentToKitchenOrder: (orderId: string) => Promise<void>;
+  confirmedOrder: (orderId: string) => Promise<void>;
 };
 
 const KEY_DATA = "@rm/data";
@@ -176,6 +178,9 @@ export const useDataStore = create<DataStore>((set, get) => ({
   // ORDERS
   // ------------------
   createOrderForTable: async (tableId) => {
+    const table = get().tables.find(t => t.id === tableId);
+    if (table?.activeOrderId) return table.activeOrderId;
+
     const order: Order = {
       id: newId("o"),
       tableId,
@@ -238,6 +243,32 @@ export const useDataStore = create<DataStore>((set, get) => ({
         if (o.id !== orderId) return o;
         return { ...o, items: o.items.filter((it) => it.id !== orderItemId) };
       }),
+    });
+    await get().save();
+  },
+
+  sentToKitchenOrder: async (orderId) => {
+    const order = get().orders.find((o) => o.id === orderId);
+    if (!order) return;
+    set({
+      orders: get().orders.map((o) =>
+        o.id === orderId
+          ? { ...o, status: "sentToKitchen" }
+          : o
+      ),
+    });
+    await get().save();
+  },
+
+  confirmedOrder: async (orderId) => {
+    const order = get().orders.find((o) => o.id === orderId);
+    if (!order) return;
+    set({
+      orders: get().orders.map((o) =>
+        o.id === orderId
+          ? { ...o, status: "confirmed" }
+          : o
+      ),
     });
     await get().save();
   },

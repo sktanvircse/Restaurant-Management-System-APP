@@ -17,14 +17,19 @@ import { RestaurantTheme } from "../theme";
 export default function OrderCreateScreen({ route, navigation }: any) {
   const data = useDataStore();
   const orderId: string = route.params?.orderId;
-  const tableId: string = route.params?.tableId;
-  const order = data.orders.find((o) => o.id === orderId);
+
+  // Subscribe directly to the specific order so component re-renders when status changes
+  const order = useDataStore(
+    (state) => state.orders.find((o) => o.id === orderId)
+  );
 
   const [search, setSearch] = useState("");
 
-  const menu = data.menuItems
-    .filter((m) => m.available)
-    .filter((m) => m.name.toLowerCase().includes(search.toLowerCase()));
+  const menu = useMemo(() => {
+    return data.menuItems
+      .filter((m) => m.available)
+      .filter((m) => m.name.toLowerCase().includes(search.toLowerCase()));
+  }, [data.menuItems, search]);
 
   const enrichedItems = useMemo(() => {
     if (!order) return [];
@@ -49,6 +54,46 @@ export default function OrderCreateScreen({ route, navigation }: any) {
     );
   }
 
+  const handleNextStatus = async () => {
+    if (!order) {
+      return;
+    }
+
+
+    if (order.items.length === 0) {
+      Alert.alert("Empty Order", "Add at least one item.");
+      return;
+    }
+
+    if (order.status === "pending") {
+      await data.sentToKitchenOrder(orderId);
+    } else if (order.status === "sentToKitchen") {
+      await data.confirmedOrder(orderId);
+    } else if (order.status === "confirmed") {
+      await data.completeOrder(orderId);
+      navigation.goBack(); // go back only after completing order
+    } else if (order.status === "completed") {
+    }
+
+    // log updated order after status change
+    const updatedOrder = data.orders.find((o) => o.id === orderId);
+  };
+
+
+  const getButtonText = () => {
+    switch (order.status) {
+      case "pending":
+        return "Send to Kitchen";
+      case "sentToKitchen":
+        return "Confirm Order";
+      case "confirmed":
+        return "Complete Order";
+      case "completed":
+      default:
+        return "Order Completed";
+    }
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: RestaurantTheme.colors.background }}>
       <View style={styles.container}>
@@ -62,6 +107,7 @@ export default function OrderCreateScreen({ route, navigation }: any) {
             style={[styles.input, { color: RestaurantTheme.colors.text }]}
           />
         </View>
+
         <FlatList
           data={menu}
           keyExtractor={(m) => m.id}
@@ -79,9 +125,7 @@ export default function OrderCreateScreen({ route, navigation }: any) {
             </TouchableOpacity>
           )}
           ListEmptyComponent={
-            <Text style={styles.emptyText}>
-              No available menu items
-            </Text>
+            <Text style={styles.emptyText}>No available menu items</Text>
           }
           style={{ maxHeight: 220 }}
         />
@@ -106,9 +150,7 @@ export default function OrderCreateScreen({ route, navigation }: any) {
             />
           )}
           ListEmptyComponent={
-            <Text style={styles.emptyText}>
-              No items added yet
-            </Text>
+            <Text style={styles.emptyText}>No items added yet</Text>
           }
         />
 
@@ -119,18 +161,8 @@ export default function OrderCreateScreen({ route, navigation }: any) {
           </Text>
         </View>
 
-        <TouchableOpacity
-          onPress={async () => {
-            if (order.items.length === 0) {
-              Alert.alert("Empty Order", "Add at least one item.");
-              return;
-            }
-            await data.completeOrder(orderId);
-            navigation.goBack();
-          }}
-          style={styles.completeBtn}
-        >
-          <Text style={styles.completeText}>Complete Order</Text>
+        <TouchableOpacity onPress={handleNextStatus} style={styles.completeBtn}>
+          <Text style={styles.completeText}>{getButtonText()}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -140,17 +172,17 @@ export default function OrderCreateScreen({ route, navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     padding: RestaurantTheme.spacing.medium,
-    gap: RestaurantTheme.spacing.small
+    gap: RestaurantTheme.spacing.small,
   },
   sectionTitle: {
-    fontWeight: 700,
+    fontWeight: "700",
     color: RestaurantTheme.colors.text,
     marginTop: RestaurantTheme.spacing.small,
     fontSize: RestaurantTheme.typography.label.fontSize,
   },
   searchRow: {
     flexDirection: "row",
-    gap: RestaurantTheme.spacing.small
+    gap: RestaurantTheme.spacing.small,
   },
   input: {
     flex: 1,
@@ -178,7 +210,7 @@ const styles = StyleSheet.create({
   },
   totalText: {
     fontSize: RestaurantTheme.typography.title.fontSize,
-    fontWeight: 800,
+    fontWeight: "800",
     color: RestaurantTheme.colors.text,
   },
   completeBtn: {
@@ -190,7 +222,7 @@ const styles = StyleSheet.create({
   completeText: {
     color: RestaurantTheme.colors.buttonText,
     textAlign: "center",
-    fontWeight: 700,
+    fontWeight: "700",
     fontSize: RestaurantTheme.typography.button.fontSize,
   },
   emptyText: {

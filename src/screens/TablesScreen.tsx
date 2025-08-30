@@ -46,7 +46,11 @@ export default function TablesScreen({ navigation }: any) {
             <TableRow
               table={item}
               onOpen={async () => {
-                const orderId = await data.createOrderForTable(item.id);
+                // If table already has an active order, reuse it
+                let orderId = item.activeOrderId;
+                if (!orderId) {
+                  orderId = await data.createOrderForTable(item.id);
+                }
                 navigation.navigate("OrderCreate", {
                   orderId,
                   tableId: item.id,
